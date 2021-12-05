@@ -3,7 +3,9 @@ import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import {Icon} from 'react-native-vector-icons/FontAwesome';
 import {Transition, Transitioning} from 'react-native-reanimated';
 
-const CardDay = () => {
+const CardDay = (props) => {
+  const {estado, fecha, mensaje} = props.item
+
   const [expanded, isExpanded] = useState(false);
   const ref = useRef();
 
@@ -25,19 +27,12 @@ const CardDay = () => {
         }}>
         <View style={styles.card}>
           <View>
-            <Image style={styles.img} source={require('../assets/mal.png')} />
+            <Image style={styles.img} source={estado.value} />
           </View>
           <View style={styles.textView}>
-            <Text style={styles.txtHeader}>23/05/2000</Text>
+            <Text style={styles.txtHeader}>{fecha}</Text>
             <Text style={styles.txtResumen} numberOfLines={expanded ? 30 : 3}>
-              Dicunt percipit deserunt ut usu. Aliquip delenit an eam, vocent
-              vituperata vim ea. Ei mollis audire interpretaris cum, ei impedit
-              fierent sea. Ius at homero noster prompta, ea sit dignissim
-              vituperata efficiendi. Natum placerat ad mei. Senserit mediocrem
-              vis ex, et dicunt deleniti gubergren mei. Mel id clita mollis
-              repudiare. Sed ad nostro delicatissimi, postea pertinax est an.
-              Adhuc sensibus percipitur sed te, eirmod tritani debitis nec ea.
-              Cu vis quis gubergren. Virtute equidem ceteros in me
+              {mensaje}
             </Text>
           </View>
         </View>
@@ -84,6 +79,7 @@ const styles = StyleSheet.create({
   },
   txtResumen: {
     textAlign: 'justify',
+    color: '#000000',
   },
 });
 

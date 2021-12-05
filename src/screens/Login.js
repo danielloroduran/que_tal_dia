@@ -7,6 +7,7 @@ const Login = ({navigation}) => {
 
   const handleLogin = () => {
     if(nombre){
+      console.log("hay nombre")
       navigation.replace('Home', {nombre: nombre})
     }else{
       Alert.alert("Error", "Es necesario que introduzcas un nombre")
@@ -26,6 +27,7 @@ const Login = ({navigation}) => {
           placeholder="Tu nombre"
           placeholderTextColor="#FFFFFF"
           autoComplete= "name"
+          returnKeyType="go"
         />
       </View>
       <Pressable style={styles.button} onPress={handleLogin}>
@@ -40,7 +42,6 @@ const Login = ({navigation}) => {
 const styles = StyleSheet.create({
   body: {
     flex: 1,
-    //alignItems: 'center',
     backgroundColor: '#F99F9F',
     paddingTop: 40,
   },
@@ -48,6 +49,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 40,
     fontWeight: 'bold',
+    color: "#850000",
   },
   txtLabel: {
     fontSize: 20,
@@ -64,17 +66,28 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   image: {
-    width: 250,
-    height: 250,
+    flex: 1,
+    maxHeight: 300,
+    maxWidth: 300,
+    alignSelf: 'center'
   },
   button: {
+    marginBottom: 20,
     width: 200,
     backgroundColor: '#FF4D4D',
     alignItems: 'center',
     justifyContent: 'center',
     height: 50,
     borderRadius: 20,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   txtInput: {
     fontSize: 20,

@@ -5,13 +5,19 @@ import {
   Text,
   StyleSheet,
   TouchableHighlight,
-  Image,
   TextInput,
   ScrollView,
 } from 'react-native';
 import CardDay from '../components/CardDay';
+import RadioButton from '../components/RadioButton';
 
 const Home = ({route}) => {
+  const data = [
+    {nombre: 'bien', value: require('../assets/bien.png')},
+    {nombre: 'normal', value: require('../assets/normal.png')},
+    {nombre: 'mal', value: require('../assets/mal.png')},
+  ];
+
   const {nombre} = route.params;
 
   const date = new Date();
@@ -19,55 +25,66 @@ const Home = ({route}) => {
     date.getMonth() + 1
   }/${date.getFullYear()}`;
 
-  const [mensaje, setMensaje] = useState('');
+  const [datos, setDatos] = useState([]);
+  const [mensajeHoy, setMensajeHoy] = useState('');
+  const [estado, setEstado] = useState([]);
+  const [mostrarHeader, setMostrarHeader] = useState(true);
+
+  const guardarDatos = () => {
+    setDatos(prevState => [
+      ...prevState,
+      {estado: estado, fecha: dateToday, mensaje: mensajeHoy},
+    ]);
+    setMensajeHoy('');
+    setMostrarHeader(false);
+  };
+
+  const IntroducirDatos = () => {
+    return (
+      <>
+        <RadioButton data={data} onSelect={value => setEstado(value)} />
+        <View style={styles.viewMessage}>
+          <Text style={styles.txtLabel}>Hoy me siento {estado.nombre}</Text>
+          <Text style={styles.txtLabel}>Escribe un breve resumen</Text>
+          <TextInput
+            style={styles.input}
+            value={mensajeHoy}
+            onChangeText={setMensajeHoy}
+            placeholder="Mi día hoy ha ido..."
+            placeholderTextColor="#FFFFFF"
+            multiline={true}
+            maxLength={500}
+            textAlignVertical="top"
+          />
+          <TouchableHighlight
+            style={styles.btnGuardar}
+            onPress={() => guardarDatos()}>
+            <Text style={styles.txtBtnGuardar}>📕 Guardar</Text>
+          </TouchableHighlight>
+        </View>
+      </>
+    );
+  };
+
+  const DatosIntroducidos = () => {
+    return (
+      <>
+        <Text style={styles.txtDatosIntroducidos}>Vuelve mañana para escribir un resumen de tu día</Text>
+      </>
+    );
+  };
 
   return (
     <View style={styles.body}>
       <Text style={styles.txtHeader}>¿Qué tal tu día?</Text>
-      <Text style={styles.txtDate}>
+      <Text style={styles.txtLabel}>
         {nombre}, hoy es {dateToday}
       </Text>
-      <View style={styles.rowButtons}>
-        <TouchableHighlight
-          style={styles.button}
-          onPress={() => {}}
-          underlayColor="transparent">
-          <Image style={styles.img} source={require('../assets/bien.png')} />
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.button}
-          onPress={() => {}}
-          underlayColor="transparent">
-          <Image style={styles.img} source={require('../assets/normal.png')} />
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.button}
-          onPress={() => {}}
-          underlayColor="transparent">
-          <Image style={styles.img} source={require('../assets/mal.png')} />
-        </TouchableHighlight>
-      </View>
-      <View style={styles.viewMessage}>
-        <Text style={styles.txtLabel}>Escribe un breve resumen</Text>
-        <TextInput
-          style={styles.input}
-          value={mensaje}
-          onChangeText={setMensaje}
-          placeholder="Mi día hoy ha ido..."
-          placeholderTextColor="#FFFFFF"
-          multiline={true}
-          maxLength={500}
-          textAlignVertical="top"
-        />
-        <TouchableHighlight style={styles.btnGuardar}>
-          <Text style={styles.txtBtnGuardar}>📕 Guardar</Text>
-        </TouchableHighlight>
-      </View>
+      {mostrarHeader ? <IntroducirDatos /> : <DatosIntroducidos />}
       <ScrollView style={{width: '100%', marginTop: 10}}>
-        <CardDay />
-        <CardDay />
-        <CardDay />
-        <CardDay />
+        {datos.map(item => {
+          return <CardDay key={item.fecha} item={item} />;
+        })}
       </ScrollView>
     </View>
   );
@@ -84,13 +101,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 40,
     fontWeight: 'bold',
-  },
-  txtDate: {
-    fontSize: 20,
+    color: "#850000",
   },
   txtLabel: {
     fontSize: 20,
-    textAlign: 'center',
+    textAlign: "center",
+    color: "#960000",
   },
   rowButtons: {
     paddingVertical: 20,
@@ -122,16 +138,41 @@ const styles = StyleSheet.create({
   btnGuardar: {
     marginTop: 15,
     borderRadius: 20,
-    backgroundColor: '#FC0000',
+    backgroundColor: '#FF4D4D',
     height: 40,
     width: 100,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   txtBtnGuardar: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
+  txtDatosIntroducidos: {
+    fontSize: 20,
+    textAlign: "center",
+    color: "#960000",
+    borderRadius: 10,
+    backgroundColor: "#FFD6D6",
+    marginTop: 20,
+    width: "75%"
+  }
 });
 
 export default Home;
