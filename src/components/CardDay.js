@@ -1,13 +1,25 @@
 import React, {useState, useRef} from 'react';
 import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
-import {Icon} from 'react-native-vector-icons/FontAwesome';
 import {Transition, Transitioning} from 'react-native-reanimated';
+import { Icon } from 'react-native-elements';
 
 const CardDay = (props) => {
-  const {estado, fecha, mensaje} = props.item
-
-  const [expanded, isExpanded] = useState(false);
+  const {fecha, estado, mensaje} = props.item
+  const [expanded, setIsExpanded] = useState(false);
   const ref = useRef();
+  const [estadoImagen, setEstadoImagen]  = useState(() => {
+    switch(estado){
+      case "bien":
+        return "emoticon-happy"
+      case "normal":
+        return "emoticon-neutral"
+      case "mal":
+        return "emoticon-sad"
+      default:
+        return ''
+    }
+  })
+  
 
   const transition = (
     <Transition.Together>
@@ -23,11 +35,11 @@ const CardDay = (props) => {
         activeOpacity={0.9}
         onPress={() => {
           ref.current.animateNextTransition();
-          isExpanded(!expanded);
+          setIsExpanded(!expanded);
         }}>
         <View style={styles.card}>
           <View>
-            <Image style={styles.img} source={estado.value} />
+            <Icon name={estadoImagen} type="material-community" color="#F7EE3E" size={50}/>
           </View>
           <View style={styles.textView}>
             <Text style={styles.txtHeader}>{fecha}</Text>

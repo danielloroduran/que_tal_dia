@@ -8,10 +8,9 @@ Lleva un registro de tu día con esta sencilla aplicación para dispositivos And
 
 ## Disclaimer
 
-Aplicación WIP. Por el momento solo cuenta con una interfaz, pero sin la posibilidad de guardar datos.
+Aplicación WIP.
 
 Algunas de las imágenes utilizadas han sido obtenidas de Flaticon.
 
 ## Construida con 🛠
-- React Native 2.0.3
-- React Native Reanimated 2.3.0-beta.1
+- React Native 0.66.3

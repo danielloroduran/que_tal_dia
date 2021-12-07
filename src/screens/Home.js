@@ -1,23 +1,27 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 
 import {
   View,
   Text,
   StyleSheet,
-  TouchableHighlight,
   TextInput,
   ScrollView,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
 import CardDay from '../components/CardDay';
+import FloatingButton from '../components/FloatingButton';
 import RadioButton from '../components/RadioButton';
+import {estadosSeleccionables} from '../data/Estados';
+import {
+  createTable,
+  getDBConnection,
+  getDiaItems,
+  saveDiaItems,
+} from '../utilities/db-service';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 const Home = ({route}) => {
-  const data = [
-    {nombre: 'bien', value: require('../assets/bien.png')},
-    {nombre: 'normal', value: require('../assets/normal.png')},
-    {nombre: 'mal', value: require('../assets/mal.png')},
-  ];
-
   const {nombre} = route.params;
 
   const date = new Date();
@@ -27,24 +31,80 @@ const Home = ({route}) => {
 
   const [datos, setDatos] = useState([]);
   const [mensajeHoy, setMensajeHoy] = useState('');
-  const [estado, setEstado] = useState([]);
+  const [estado, setEstado] = useState(null);
   const [mostrarHeader, setMostrarHeader] = useState(true);
 
-  const guardarDatos = () => {
-    setDatos(prevState => [
-      ...prevState,
-      {estado: estado, fecha: dateToday, mensaje: mensajeHoy},
-    ]);
-    setMensajeHoy('');
-    setMostrarHeader(false);
+  const loadDataCallBack = useCallback(async () => {
+    try {
+      const db = await getDBConnection();
+      await createTable(db);
+      const storedDiaItems = await getDiaItems(db);
+      if (storedDiaItems.length) {
+        setDatos(storedDiaItems);
+        comprobarDatos(storedDiaItems);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  const comprobarDatos = data => {
+    data.map(item => {
+      if (item.fecha === dateToday) {
+        setMostrarHeader(false);
+        return;
+      }
+    });
+  };
+
+  useEffect(() => {
+    loadDataCallBack();
+  }, [loadDataCallBack]);
+
+  const addDayItem = async () => {
+    try {
+      if(estado.length > 0){
+        const newDayItems = [
+          ...datos,
+          {
+            id: datos.length
+              ? datos.reduce((acc, cur) => {
+                  if (cur.id > acc.id) return cur;
+                  return acc;
+                }).id + 1
+              : 0,
+            fecha: dateToday,
+            estado: estado.nombre,
+            mensaje: mensajeHoy,
+          },
+        ];
+        setDatos(newDayItems);
+        const db = await getDBConnection();
+        await saveDiaItems(db, newDayItems);
+  
+        setMensajeHoy('');
+        setEstado(null);
+        setMostrarHeader(false);
+      }else{
+        Alert.alert("Error", "Aunque el resumen puede estar en blanco, debes seleccionar una emoción para el día")
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const IntroducirDatos = () => {
     return (
       <>
-        <RadioButton data={data} onSelect={value => setEstado(value)} />
+        <RadioButton
+          data={estadosSeleccionables}
+          onSelect={(value) => setEstado(value)}
+        />
         <View style={styles.viewMessage}>
-          <Text style={styles.txtLabel}>Hoy me siento {estado.nombre}</Text>
+          {estado && (
+            <Text style={styles.txtLabel}>Hoy me siento {estado.nombre}</Text>
+          )}
           <Text style={styles.txtLabel}>Escribe un breve resumen</Text>
           <TextInput
             style={styles.input}
@@ -56,11 +116,12 @@ const Home = ({route}) => {
             maxLength={500}
             textAlignVertical="top"
           />
-          <TouchableHighlight
+          <TouchableOpacity
+            activeOpacity={0.8}
             style={styles.btnGuardar}
-            onPress={() => guardarDatos()}>
+            onPress={() => addDayItem()}>
             <Text style={styles.txtBtnGuardar}>📕 Guardar</Text>
-          </TouchableHighlight>
+          </TouchableOpacity>
         </View>
       </>
     );
@@ -69,7 +130,9 @@ const Home = ({route}) => {
   const DatosIntroducidos = () => {
     return (
       <>
-        <Text style={styles.txtDatosIntroducidos}>Vuelve mañana para escribir un resumen de tu día</Text>
+        <Text style={styles.txtDatosIntroducidos}>
+          Vuelve mañana para escribir un resumen de tu día
+        </Text>
       </>
     );
   };
@@ -86,6 +149,7 @@ const Home = ({route}) => {
           return <CardDay key={item.fecha} item={item} />;
         })}
       </ScrollView>
+      <FloatingButton />
     </View>
   );
 };
@@ -101,12 +165,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 40,
     fontWeight: 'bold',
-    color: "#850000",
+    color: '#850000',
   },
   txtLabel: {
     fontSize: 20,
-    textAlign: "center",
-    color: "#960000",
+    textAlign: 'center',
+    color: '#960000',
   },
   rowButtons: {
     paddingVertical: 20,
@@ -166,13 +230,13 @@ const styles = StyleSheet.create({
   },
   txtDatosIntroducidos: {
     fontSize: 20,
-    textAlign: "center",
-    color: "#960000",
+    textAlign: 'center',
+    color: '#960000',
     borderRadius: 10,
-    backgroundColor: "#FFD6D6",
+    backgroundColor: '#FFD6D6',
     marginTop: 20,
-    width: "75%"
-  }
+    width: '75%',
+  },
 });
 
 export default Home;

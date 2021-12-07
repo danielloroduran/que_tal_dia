@@ -7,7 +7,6 @@ const Login = ({navigation}) => {
 
   const handleLogin = () => {
     if(nombre){
-      console.log("hay nombre")
       navigation.replace('Home', {nombre: nombre})
     }else{
       Alert.alert("Error", "Es necesario que introduzcas un nombre")

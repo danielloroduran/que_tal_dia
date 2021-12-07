@@ -8,7 +8,6 @@ const RadioButton = ({data, onSelect}) => {
   const selectHandler = (item) => {
     onSelect(item)
     setOpcionSelec(item)
-    console.log(item)
   }
 
   return (
