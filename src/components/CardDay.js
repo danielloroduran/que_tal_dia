@@ -10,11 +10,11 @@ const CardDay = (props) => {
   const [estadoImagen, setEstadoImagen]  = useState(() => {
     switch(estado){
       case "bien":
-        return "emoticon-happy"
+        return "smile"
       case "normal":
-        return "emoticon-neutral"
+        return "meh"
       case "mal":
-        return "emoticon-sad"
+        return "frown"
       default:
         return ''
     }
@@ -39,7 +39,7 @@ const CardDay = (props) => {
         }}>
         <View style={styles.card}>
           <View>
-            <Icon name={estadoImagen} type="material-community" color="#F7EE3E" size={50}/>
+            <Icon name={estadoImagen} type="font-awesome-5" color="#F7EE3E" size={50}/>
           </View>
           <View style={styles.textView}>
             <Text style={styles.txtHeader}>{fecha}</Text>
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     backgroundColor: '#FFFFFF',
     borderRadius: 15,
-    width: '75%',
+    width: '78%',
     flexDirection: 'row',
     shadowColor: '#000',
     shadowOffset: {
@@ -81,17 +81,15 @@ const styles = StyleSheet.create({
     flex: 2,
     paddingHorizontal: 10,
   },
-  img: {
-    width: 50,
-    height: 50,
-  },
   txtHeader: {
     color: '#000000',
     fontSize: 20,
+    fontFamily: "Poppins-SemiBold"
   },
   txtResumen: {
     textAlign: 'justify',
     color: '#000000',
+    fontFamily: "Poppins-Regular"
   },
 });
 

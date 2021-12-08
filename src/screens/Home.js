@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import CardDay from '../components/CardDay';
 import FloatingButton from '../components/FloatingButton';
@@ -15,11 +16,11 @@ import RadioButton from '../components/RadioButton';
 import {estadosSeleccionables} from '../data/Estados';
 import {
   createTable,
+  deleteTable,
   getDBConnection,
   getDiaItems,
   saveDiaItems,
 } from '../utilities/db-service';
-import LoadingIndicator from '../components/LoadingIndicator';
 
 const Home = ({route}) => {
   const {nombre} = route.params;
@@ -31,8 +32,9 @@ const Home = ({route}) => {
 
   const [datos, setDatos] = useState([]);
   const [mensajeHoy, setMensajeHoy] = useState('');
-  const [estado, setEstado] = useState(null);
+  const [estado, setEstado] = useState();
   const [mostrarHeader, setMostrarHeader] = useState(true);
+  const [cargando, setCargando] = useState(true);
 
   const loadDataCallBack = useCallback(async () => {
     try {
@@ -43,6 +45,7 @@ const Home = ({route}) => {
         setDatos(storedDiaItems);
         comprobarDatos(storedDiaItems);
       }
+      setCargando(false);
     } catch (error) {
       console.log(error);
     }
@@ -63,7 +66,7 @@ const Home = ({route}) => {
 
   const addDayItem = async () => {
     try {
-      if(estado.length > 0){
+      if (estado) {
         const newDayItems = [
           ...datos,
           {
@@ -81,17 +84,48 @@ const Home = ({route}) => {
         setDatos(newDayItems);
         const db = await getDBConnection();
         await saveDiaItems(db, newDayItems);
-  
+
         setMensajeHoy('');
-        setEstado(null);
+        setEstado();
         setMostrarHeader(false);
-      }else{
-        Alert.alert("Error", "Aunque el resumen puede estar en blanco, debes seleccionar una emoción para el día")
+      } else {
+        Alert.alert(
+          'Error',
+          'Aunque el resumen puede estar en blanco, debes seleccionar una emoción para el día',
+        );
       }
-      
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const deleteData = () => {
+    Alert.alert(
+      '¿Continuar?',
+      'Quieres borrar todos los datos? Esta acción es irreversible',
+      [
+        {
+          text: 'Cancelar',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'Borrar',
+          onPress: async () => {
+            setCargando(true);
+            const db = await getDBConnection();
+            await deleteTable(db);
+            setDatos([]);
+            setMostrarHeader(true);
+            setEstado()
+            loadDataCallBack();
+          },
+        },
+      ],
+      {
+        cancelable: true,
+      },
+    );
   };
 
   const IntroducirDatos = () => {
@@ -99,7 +133,7 @@ const Home = ({route}) => {
       <>
         <RadioButton
           data={estadosSeleccionables}
-          onSelect={(value) => setEstado(value)}
+          onSelect={value => setEstado(value)}
         />
         <View style={styles.viewMessage}>
           {estado && (
@@ -139,17 +173,25 @@ const Home = ({route}) => {
 
   return (
     <View style={styles.body}>
-      <Text style={styles.txtHeader}>¿Qué tal tu día?</Text>
-      <Text style={styles.txtLabel}>
-        {nombre}, hoy es {dateToday}
-      </Text>
-      {mostrarHeader ? <IntroducirDatos /> : <DatosIntroducidos />}
-      <ScrollView style={{width: '100%', marginTop: 10}}>
-        {datos.map(item => {
-          return <CardDay key={item.fecha} item={item} />;
-        })}
-      </ScrollView>
-      <FloatingButton />
+      {cargando ? (
+        <>
+          <ActivityIndicator size={50} color="#FFFFFF" style={{alignSelf:"center"}}/>
+        </>
+      ) : (
+        <>
+          <Text style={styles.txtHeader}>¿Qué tal tu día?</Text>
+          <Text style={styles.txtLabel}>
+            {nombre}, hoy es {dateToday}
+          </Text>
+          {mostrarHeader ? <IntroducirDatos /> : <DatosIntroducidos />}
+          <ScrollView style={{width: '100%', marginTop: 10}}>
+            {datos.map(item => {
+              return <CardDay key={item.fecha} item={item} />;
+            })}
+          </ScrollView>
+          <FloatingButton onPress={() => deleteData()} />
+        </>
+      )}
     </View>
   );
 };
@@ -163,14 +205,15 @@ const styles = StyleSheet.create({
   },
   txtHeader: {
     textAlign: 'center',
-    fontSize: 40,
-    fontWeight: 'bold',
+    fontSize: 35,
     color: '#850000',
+    fontFamily: "Poppins-Bold"
   },
   txtLabel: {
     fontSize: 20,
     textAlign: 'center',
     color: '#960000',
+    fontFamily: "Poppins-Regular"
   },
   rowButtons: {
     paddingVertical: 20,
@@ -194,6 +237,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 10,
     alignContent: 'flex-start',
+    fontFamily: "Poppins-Light"
   },
   viewMessage: {
     alignItems: 'center',
@@ -218,15 +262,7 @@ const styles = StyleSheet.create({
   },
   txtBtnGuardar: {
     color: '#FFFFFF',
-    fontWeight: 'bold',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
+    fontFamily: "Poppins-Medium"
   },
   txtDatosIntroducidos: {
     fontSize: 20,
@@ -235,7 +271,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#FFD6D6',
     marginTop: 20,
-    width: '75%',
+    width: '78%',
+    paddingHorizontal: 2,
+    fontFamily: "Poppins-Regular"
   },
 });
 

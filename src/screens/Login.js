@@ -16,7 +16,7 @@ const Login = ({navigation}) => {
   return (
     <ScrollView style={styles.body} alignItems="center">
       <Text style={styles.txtHeader}>Bienvenido, bienvenida</Text>
-      <Image style={styles.image} source={require("../assets/login.png")}/>
+      <Image style={styles.image} source={require("../../assets/images/login.png")}/>
       <View style={{paddingVertical: 40}}>
         <Text style={styles.txtLabel}>Introduce tu nombre</Text>
         <TextInput
@@ -46,13 +46,15 @@ const styles = StyleSheet.create({
   },
   txtHeader: {
     textAlign: 'center',
-    fontSize: 40,
-    fontWeight: 'bold',
+    fontSize: 35,
     color: "#850000",
+    fontFamily: "Poppins-Bold"
   },
   txtLabel: {
     fontSize: 20,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: "Poppins-Regular",
+    color: '#960000',
   },
   input: {
     borderRadius: 10,
@@ -62,7 +64,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 10,
     alignSelf: 'center',
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: "Poppins-Light"
   },
   image: {
     flex: 1,
@@ -91,8 +94,8 @@ const styles = StyleSheet.create({
   txtInput: {
     fontSize: 20,
     textAlign: 'center',
-    fontWeight: 'bold',
-    color: "#FFFFFF"  
+    color: "#FFFFFF",
+    fontFamily: "Poppins-Medium"
   }
 });
 

@@ -38,7 +38,6 @@ export const saveDiaItems = async (db, diaItems) => {
     diaItems
       .map(i => `(${i.id}, '${i.fecha}', '${i.estado}', '${i.mensaje}');`)
       .join(',');
-  console.log(insertQuery)
   return db.executeSql(insertQuery);
 };
 
@@ -47,7 +46,7 @@ export const deleteTodoItem = async (db, id) => {
   await db.executeSql(deleteQuery);
 };
 
-export const deleteTable = async db => {
+export const deleteTable = async (db) => {
   const query = `drop table ${tableName};`;
   await db.executeSql(query);
 };
