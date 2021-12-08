@@ -1,7 +1,7 @@
 # ¿Qué tal tu día? 🎮
 
 <p align="center">
-  <img src="src/assets/login.png" width="45%" height="45%">
+  <img src="/assets/images/login.png" width="45%" height="45%">
 </p>
 
 Lleva un registro de tu día con esta sencilla aplicación para dispositivos Android.
